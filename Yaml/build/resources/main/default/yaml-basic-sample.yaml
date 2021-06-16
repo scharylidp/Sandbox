@@ -1,0 +1,4 @@
+# Root "basic"
+property-one: foo
+property-two: bar
+property-three: 2000

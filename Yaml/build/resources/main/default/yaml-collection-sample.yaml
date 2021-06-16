@@ -1,0 +1,24 @@
+# Root "list"
+basic-samples:
+  - property-one: one-one
+    property-two: one-two
+    property-three: 1000
+  - property-one: two-one
+    property-two: two-two
+    property-three: 2000
+  - property-one: three-one
+    property-two: three-two
+    property-three: 3000
+nest-samples:
+  - basic-sample:
+      property-one: nest-one-one
+      property-two: nest-one-two
+      property-three: 1001
+  - basic-sample:
+      property-one: nest-two-one
+      property-two: nest-two-two
+      property-three: 2002
+  - basic-sample:
+      property-one: nest-three-one
+      property-two: nest-three-two
+      property-three: 3003

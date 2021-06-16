@@ -1,0 +1,6 @@
+sandbox.yaml.model.structure
+
+These files are objects NOT intended to represent yaml configurations.
+
+They should:
+    - help manage yaml files during processing

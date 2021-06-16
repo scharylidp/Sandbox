@@ -1,0 +1,9 @@
+sandbox.yaml.model.config
+
+These files are objects intended to represent yaml configurations.
+
+They should:
+    - map directly to a yaml file
+    - have Jackson serialization annotations
+    - have camel case property names
+    - have Jackson property annotations mapping them to a yaml kebab-cased value
