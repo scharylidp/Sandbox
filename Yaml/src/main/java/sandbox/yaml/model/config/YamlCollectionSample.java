@@ -1,5 +1,6 @@
 package sandbox.yaml.model.config;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -13,10 +14,21 @@ public class YamlCollectionSample
    @JsonProperty("nest-samples")
    private List<YamlNestSample> yamlNestSamples;
 
+   @JsonIgnore
+   private boolean initObjects = false;
+
 
    public YamlCollectionSample()
    {
-      // do nothing
+      initialize();
+   }
+
+   @JsonIgnore
+   public YamlCollectionSample(boolean initObjects)
+   {
+      this.initObjects = initObjects;
+
+      initialize();
    }
 
    @JsonIgnore
@@ -41,5 +53,23 @@ public class YamlCollectionSample
    public List<YamlNestSample> getYamlNestSamples()
    {
       return yamlNestSamples;
+   }
+
+   @JsonIgnore
+   private void initialize()
+   {
+      if (initObjects)
+      {
+         // Initialize Objects here.
+         yamlBasicSamples = new ArrayList<>();
+         yamlNestSamples = new ArrayList<>();
+      }
+      else
+      {
+         yamlBasicSamples = null;
+         yamlNestSamples = null;
+
+         initObjects = true;
+      }
    }
 }

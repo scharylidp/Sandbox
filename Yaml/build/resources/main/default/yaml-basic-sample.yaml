@@ -1,4 +1,5 @@
-# Root "basic"
-property-one: foo
-property-two: bar
-property-three: 2000
+# ADMI_HOME config
+basic-sample:
+  property-one: foo
+  property-two: bar
+  property-three: 2000

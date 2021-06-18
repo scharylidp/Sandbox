@@ -1,3 +1,4 @@
-# Root "basic"
-property-one: hocus
-property-two: pocus
+# Root "yaml-basic-sample" (override)
+basic-sample:
+  property-one: hocus
+  property-two: pocus

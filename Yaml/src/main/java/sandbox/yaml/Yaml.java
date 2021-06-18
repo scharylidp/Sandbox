@@ -4,12 +4,17 @@ import sandbox.yaml.model.config.YamlBasicSample;
 import sandbox.yaml.model.config.YamlCollectionSample;
 import sandbox.yaml.model.config.YamlNestSample;
 
-public class Main
+public class Yaml
 {
+   public static final String ANSI_RESET = "\u001B[0m";
+   public static final String ANSI_GREEN = "\u001B[32m";
+   public static final String ANSI_YELLOW = "\u001B[33m";
+   public static final String ANSI_CYAN = "\u001B[36m";
+   public static final String BOLD = "\u001B[1m";
+
+
    public static void main(String[] args)
    {
-      System.out.println("Started Main");
-
       Reader reader = new Reader();
 
       reader.read();
@@ -19,11 +24,11 @@ public class Main
 
    private static void processResults(Reader reader)
    {
-      System.out.println("Results:");
+      System.out.println(ANSI_GREEN + BOLD + "RESULTS:\n" + ANSI_RESET);
 
-      processBasicSample(reader.getBasicSample());
-      processNestSample(reader.getNestSample());
-      processCollectionSample(reader.getCollectionSample());
+      processBasicSample(reader.config.getYamlBasicSample());
+      processNestSample(reader.config.getYamlNestSample());
+      processCollectionSample(reader.config.getYamlCollectionSample());
    }
 
    private static void processBasicSample(YamlBasicSample sample)
@@ -34,7 +39,7 @@ public class Main
       }
       else
       {
-         System.out.println("   Basic Sample:");
+         System.out.println(ANSI_YELLOW + "   Basic Sample:" + ANSI_RESET);
          System.out.println("      Property One: " + sample.getPropertyOne());
          System.out.println("      Property Two: " + sample.getPropertyTwo());
          System.out.println("      Property Three: " + sample.getPropertyThree());
@@ -50,7 +55,7 @@ public class Main
       }
       else
       {
-         System.out.println("   Nest Sample:");
+         System.out.println(ANSI_YELLOW + "   Nest Sample:" + ANSI_RESET);
          System.out.println("      Nest Property One: " + sample.getBasic().getPropertyOne());
          System.out.println("      Nest Property Two: " + sample.getBasic().getPropertyTwo());
          System.out.println("      Nest Property Three: " + sample.getBasic().getPropertyThree());
@@ -66,8 +71,9 @@ public class Main
       }
       else
       {
-         System.out.println("   Collection Sample:");
-         System.out.println("      Basic Elements:");
+         System.out.println(ANSI_YELLOW + "   Collection Sample:" + ANSI_RESET);
+
+         System.out.println(ANSI_CYAN + "      Basic Elements:" + ANSI_RESET);
 
          for (YamlBasicSample basics : sample.getYamlBasicSamples())
          {
@@ -77,7 +83,7 @@ public class Main
             System.out.println();
          }
 
-         System.out.println("      Nest Elements:");
+         System.out.println(ANSI_CYAN + "      Nest Elements:" + ANSI_RESET);
 
          for (YamlNestSample nests : sample.getYamlNestSamples())
          {

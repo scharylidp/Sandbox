@@ -2,13 +2,13 @@ sandbox/yaml/model/config/YamlBasicSample.java
  sandbox.yaml.model.config.YamlBasicSample
 sandbox/yaml/model/config/YamlNestSample.java
  sandbox.yaml.model.config.YamlNestSample
-sandbox/yaml/Reader.java
- sandbox.yaml.Reader
-sandbox/yaml/model/config/YamlCollectionSample.java
- sandbox.yaml.model.config.YamlCollectionSample
-sandbox/yaml/Main.java
- sandbox.yaml.Main
-sandbox/yaml/model/structure/Config.java
- sandbox.yaml.model.structure.Config
+sandbox/yaml/model/config/Config.java
+ sandbox.yaml.model.config.Config
 sandbox/yaml/model/structure/YamlPair.java
  sandbox.yaml.model.structure.YamlPair
+sandbox/yaml/model/config/YamlCollectionSample.java
+ sandbox.yaml.model.config.YamlCollectionSample
+sandbox/yaml/Reader.java
+ sandbox.yaml.Reader
+sandbox/yaml/Yaml.java
+ sandbox.yaml.Yaml

@@ -7,34 +7,20 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import sandbox.yaml.model.config.Config;
 import sandbox.yaml.model.config.YamlBasicSample;
 import sandbox.yaml.model.config.YamlCollectionSample;
 import sandbox.yaml.model.config.YamlNestSample;
-import sandbox.yaml.model.structure.Config;
 import sandbox.yaml.model.structure.YamlPair;
 
 public class Reader
 {
-   private Config config;
-   private YamlPair basicSample = new YamlPair();
-   private YamlPair nestSample = new YamlPair();
-   private YamlPair collectionSample = new YamlPair();
+   private final YamlPair basicSample = new YamlPair();
+   private final YamlPair nestSample = new YamlPair();
+   private final YamlPair collectionSample = new YamlPair();
 
+   public Config config;
 
-   public YamlBasicSample getBasicSample()
-   {
-      return hasConfig() ? config.getYamlBasicSample() : null;
-   }
-
-   public YamlNestSample getNestSample()
-   {
-      return hasConfig() ? config.getYamlNestSample() : null;
-   }
-
-   public YamlCollectionSample getCollectionSample()
-   {
-      return hasConfig() ? config.getYamlCollectionSample() : null;
-   }
 
    public Reader()
    {
@@ -43,21 +29,19 @@ public class Reader
 
    public void read()
    {
-      System.out.println("Starting Reader.read().");
+      config = new Config(true);
 
-      config = new Config();
-
-      fetch();
+      retrieveFiles();
       setDefault();
-      setOverride();
-
-      System.out.println("Completed Reader.read().");
+      applyOverrideConfig();
    }
 
-   private void fetch()
+   /*
+      Retrieves default and override yaml configuration files. If a file is missing or
+      unable to be accessed, the File value set on the particular property is null.
+    */
+   private void retrieveFiles()
    {
-      System.out.println("Starting fetches.");
-
       String defaultRoot = "src/main/resources/default/";
       String overrideRoot = "src/main/resources/override/";
 
@@ -68,89 +52,109 @@ public class Reader
       basicSample.setOverrideYaml(fetch(overrideRoot, "yaml-basic-sample.yaml"));
       nestSample.setOverrideYaml(fetch(overrideRoot, "yaml-nest-sample.yaml"));
       collectionSample.setOverrideYaml(fetch(overrideRoot, "yaml-collection-sample.yaml"));
-
-      System.out.println("Completed fetches.");
    }
 
+   /*
+      Reads the fetched yaml file into a temporary parent Config object.
+      Then applies the specific child object to the working parent Config.
+    */
    private void setDefault()
    {
-      System.out.println("Starting reads.");
+      Config tempConfig;
 
-      config.setYamlBasicSample(read(basicSample.getDefaultYaml(), new YamlBasicSample()));
-      config.setYamlNestSample(read(nestSample.getDefaultYaml(), new YamlNestSample()));
-      config.setYamlCollectionSample(read(collectionSample.getDefaultYaml(), new YamlCollectionSample()));
+      tempConfig = read(basicSample.getDefaultYaml(), new Config());
+      config.setYamlBasicSample(tempConfig.getYamlBasicSample());
 
-      System.out.println("Completed reads.");
+      tempConfig = read(nestSample.getDefaultYaml(), new Config());
+      config.setYamlNestSample(tempConfig.getYamlNestSample());
+
+      tempConfig = read(collectionSample.getDefaultYaml(), new Config());
+      config.setYamlCollectionSample(tempConfig.getYamlCollectionSample());
    }
 
-   private void setOverride()
+   private void applyOverrideConfig()
    {
-      System.out.println("Starting overrides");
-
       if (basicSample.getOverrideYaml() != null)
       {
          YamlBasicSample base = config.getYamlBasicSample();
-         YamlBasicSample ovrd = read(basicSample.getOverrideYaml(), new YamlBasicSample());
+         YamlBasicSample ovrd = read(basicSample.getOverrideYaml(), new Config()).getYamlBasicSample();
 
-         Class<? extends YamlBasicSample> baseClass = base.getClass();
-         Class<? extends YamlBasicSample> ovrdClass = ovrd.getClass();
-
-         Field[] fields = ovrdClass.getDeclaredFields();
-
-         for (Field f : fields)
-         {
-            System.out.println("Evaluating override: " + f.getName());
-
-            try
-            {
-               Field t = baseClass.getDeclaredField(f.getName());
-               f.setAccessible(true);
-
-               if (f.get(ovrd) != null)
-               {
-                  t.setAccessible(true);
-                  t.set(base, f.get(ovrd));
-               }
-            }
-            catch (NoSuchFieldException | IllegalAccessException ex)
-            {
-               System.out.println("Illegal access during override.");
-            }
-         }
+         processConfigOverride(base, ovrd);
       }
 
-      System.out.println("Completed overrides");
+      if (nestSample.getOverrideYaml() != null)
+      {
+         YamlNestSample base = config.getYamlNestSample();
+         YamlNestSample ovrd = read(nestSample.getOverrideYaml(), new Config()).getYamlNestSample();
+
+         processConfigOverride(base, ovrd);
+      }
+
+      if (collectionSample.getOverrideYaml() != null)
+      {
+         YamlCollectionSample base = config.getYamlCollectionSample();
+         YamlCollectionSample ovrd = read(collectionSample.getOverrideYaml(), new Config()).getYamlCollectionSample();
+
+         processConfigOverride(base, ovrd);
+      }
+   }
+
+   private <T> void processConfigOverride(T base, T ovrd)
+   {
+      Field[] fields = ovrd.getClass().getDeclaredFields();
+
+      for (Field ovrdField : fields)
+      {
+         try
+         {
+            Field baseField = base.getClass().getDeclaredField(ovrdField.getName());
+            ovrdField.setAccessible(true);
+
+            // TODO: This does not handle nesting.
+            //
+            if (ovrdField.get(ovrd) != null && ! ovrdField.getName().contains("initObjects"))
+            {
+               baseField.setAccessible(true);
+               baseField.set(base, ovrdField.get(ovrd));
+
+               System.out.println("Overwriting: " + ovrdField);
+            }
+         }
+         catch (NoSuchFieldException | IllegalAccessException ex)
+         {
+            System.out.println("Illegal access during override.");
+         }
+      }
    }
 
    private File fetch(String root, String filename)
    {
-      System.out.println("Starting private fetch.");
-
       File file = null;
 
       try
       {
          file = new File(root + filename);
+
+         if (! file.exists())
+         {
+            file = null;
+         }
       }
       catch (NullPointerException ex)
       {
          System.out.println("Null pointer on file retrieve.");
       }
 
-      System.out.println("Completed private fetch.");
-
       return file;
    }
 
-   private <T> T read(File file, T obj)
+   private Config read(File file, Config obj)
    {
       try
       {
-         System.out.println("Reading " + obj.getClass());
-
          ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
 
-         obj = mapper.readValue(file, (Class<T>) obj.getClass());
+         obj = mapper.readValue(file, Config.class);
       }
       catch (JsonParseException jsonParseException)
       {
@@ -168,13 +172,6 @@ public class Reader
          System.out.println(exception.getMessage());
       }
 
-      System.out.println("Read complete.");
-
       return obj;
-   }
-
-   private boolean hasConfig()
-   {
-      return config != null;
    }
 }

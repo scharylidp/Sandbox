@@ -14,10 +14,21 @@ public class YamlBasicSample
    @JsonProperty("property-three")
    private Integer propertyThree;
 
+   @JsonIgnore
+   private boolean initObjects = false;
+
 
    public YamlBasicSample()
    {
-      // do nothing
+      initialize();
+   }
+
+   @JsonIgnore
+   public YamlBasicSample(boolean initObjects)
+   {
+      this.initObjects = initObjects;
+
+      initialize();
    }
 
    @JsonIgnore
@@ -54,5 +65,22 @@ public class YamlBasicSample
    public Integer getPropertyThree()
    {
       return propertyThree;
+   }
+
+   @JsonIgnore
+   private void initialize()
+   {
+      if (initObjects)
+      {
+         // Initialize Objects here.
+      }
+      else
+      {
+         initObjects = true;
+      }
+
+      propertyOne = null;
+      propertyTwo = null;
+      propertyThree = null;
    }
 }

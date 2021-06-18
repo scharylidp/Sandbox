@@ -1,5 +1,5 @@
-# Root "nest"
-basic-sample:
-  property-one: foo
-  property-two: bar
-  property-three: 2000
+nest-sample:
+  basic-sample:
+    property-one: foo
+    property-two: bar
+    property-three: 2000

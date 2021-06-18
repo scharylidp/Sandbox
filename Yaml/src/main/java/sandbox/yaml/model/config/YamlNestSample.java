@@ -8,10 +8,21 @@ public class YamlNestSample
    @JsonProperty("basic-sample")
    private YamlBasicSample yamlBasicSample;
 
+   @JsonIgnore
+   private boolean initObjects = false;
+
 
    public YamlNestSample()
    {
-      // do nothing
+      initialize();
+   }
+
+   @JsonIgnore
+   public YamlNestSample(boolean initObjects)
+   {
+      this.initObjects = initObjects;
+
+      initialize();
    }
 
    @JsonIgnore
@@ -24,5 +35,21 @@ public class YamlNestSample
    public YamlBasicSample getBasic()
    {
       return yamlBasicSample;
+   }
+
+   @JsonIgnore
+   private void initialize()
+   {
+      if (initObjects)
+      {
+         // Initialize Objects here.
+         yamlBasicSample = new YamlBasicSample();
+      }
+      else
+      {
+         yamlBasicSample = null;
+
+         initObjects = true;
+      }
    }
 }
